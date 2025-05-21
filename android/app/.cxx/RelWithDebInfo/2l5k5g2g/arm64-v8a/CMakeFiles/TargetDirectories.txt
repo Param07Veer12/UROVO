@@ -1,0 +1,2 @@
+/Users/paramveersingh/Desktop/Jain Sir PROJECTS/urovo/android/app/.cxx/RelWithDebInfo/2l5k5g2g/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/paramveersingh/Desktop/Jain Sir PROJECTS/urovo/android/app/.cxx/RelWithDebInfo/2l5k5g2g/arm64-v8a/CMakeFiles/rebuild_cache.dir

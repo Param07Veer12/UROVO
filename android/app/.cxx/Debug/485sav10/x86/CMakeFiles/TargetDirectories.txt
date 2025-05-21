@@ -1,0 +1,2 @@
+/Users/paramveersingh/Desktop/Jain Sir PROJECTS/urovo/android/app/.cxx/Debug/485sav10/x86/CMakeFiles/edit_cache.dir
+/Users/paramveersingh/Desktop/Jain Sir PROJECTS/urovo/android/app/.cxx/Debug/485sav10/x86/CMakeFiles/rebuild_cache.dir
