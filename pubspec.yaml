@@ -38,6 +38,7 @@ dependencies:
   http: ^1.2.2
   dio: ^5.5.0+1
   fluttertoast: ^8.2.12
+  pin_code_fields: ^8.0.1
   shared_preferences: ^2.2.3
   google_fonts: ^6.2.1
   flutter_native_splash: ^2.4.1
@@ -52,12 +53,14 @@ dependencies:
   flutter_bloc: ^8.0.1
   image_picker: ^1.1.2
   image_cropper: ^8.0.2
+  simple_barcode_scanner: ^0.3.0
+
   # fl_chart: ^0.69.2
   pie_chart: ^5.4.0
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  # image_path: "assets/images/Applogo.jpeg"
+  # image_path: "assets/images/Logo1.ico"
 dev_dependencies:
   flutter_test:
     sdk: flutter

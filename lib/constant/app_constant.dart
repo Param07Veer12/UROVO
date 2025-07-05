@@ -3,6 +3,7 @@ class AppConstants {
   static const double APP_VERSION = 1.0;
   static const String baseUrl = 'http://150.242.202.190:90';
   static const String login = baseUrl + '/Account/Login';
+  static const String selectCompanyFinYear = baseUrl + '/Account/SelectCompanyFinYear';
   static const String webLogin = baseUrl + '/Account/WebLogin';
   static const String getFinancialYear = baseUrl + '/Account/GetFinanceYear';
   static const String getCompanyMst = baseUrl + '/Account/GetCompanyMst';

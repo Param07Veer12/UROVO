@@ -11,6 +11,8 @@ import 'package:urovo/models/CompanyModel.dart';
 import 'package:urovo/models/FinancialYearModel.dart';
 import 'package:urovo/services/login_service.dart';
 import 'package:urovo/services/pref_service.dart';
+import 'package:urovo/view/auth/createMpinScreen.dart';
+import 'package:urovo/view/auth/mpinScreen.dart';
 import 'package:urovo/view/home/home.dart';
 import 'package:urovo/view/home/main_screen.dart';
 
@@ -37,7 +39,7 @@ class LoginScreeen extends StatelessWidget {
                 height: 60,
               ),
               Image.asset(
-                "assets/images/Applogo.jpeg",
+                "assets/images/Logo1.ico",
                 height: 120,
               ),
               SizedBox(
@@ -67,7 +69,11 @@ class _SignInFormState extends State<SignInForm> {
   final emailController = TextEditingController();
   final password = TextEditingController();
       String companyValue = "Choose Company";
+            int companyId = 0;
+
     List<String> companyValueList = ["Choose Company"];
+        List<int> companyIdList = [0];
+
      List<String> dbNameValueList = ["Choose Company"];
 
       String financialYearValue = "Choose Finacial Year";
@@ -81,8 +87,6 @@ class _SignInFormState extends State<SignInForm> {
     initialization();
 
     getRememberDetails();
-    _getCompanyMst();
-    _getFinanceYear();
 
   }
 
@@ -121,17 +125,19 @@ class _SignInFormState extends State<SignInForm> {
       );
       final service = ApiLoginPasswordService();
       service.ApiLoginService(emailController.text, password.text,dbName,financialYearValue)
-          .then((value) {
-        Navigator.pop(context);
+          .then((value) async {
         if (value.isNotEmpty) {
           if (value[0]["code"] == 0) {
-           SharedPreferencesClass.prefs.setString("token", value[0]["token"].toString());
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => MainScreen()));
+SharedPreferencesClass.prefs.setString("firsttoken", value[0]["token"].toString());
+    _getCompanyMst();
+   
+
+
+
             // Get.offAllNamed("/");
           } else {
+                    Navigator.pop(context);
+
             Fluttertoast.showToast(
                 msg: "Invalid Credentials",
                 backgroundColor: Colors.red,
@@ -139,6 +145,8 @@ class _SignInFormState extends State<SignInForm> {
                 textColor: Colors.white);
           }
         } else {
+                  Navigator.pop(context);
+
           Fluttertoast.showToast(
               msg: "Invalid Credentials",
               backgroundColor: Colors.red,
@@ -149,7 +157,9 @@ class _SignInFormState extends State<SignInForm> {
     }
   }
 
-   void _getFinanceYear() {
+   Future<void> _getFinanceYear() async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
       final service = ApiLoginPasswordService();
       service.getFinancialYearAPI()
           .then((value) {
@@ -170,7 +180,136 @@ for (var financialModel in financialModel!.data!.data) {
 }
 setState(() {
 });
+        Navigator.pop(context);
+
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) {
+    String selectedCompany = companyValue;
+    String selectedFinancialYear = financialYearValue;
+
+    return StatefulBuilder(builder: (context, setState) {
+      return AlertDialog(
+        backgroundColor: Colors.black,
+        title: Text("Select Company & Financial Year", style: AppTextStyles.lable),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Company Name", style: AppTextStyles.lable),
+              const SizedBox(height: 8),
+              Container(
+                padding: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey)),
+                child: dropDownWidget(
+                  initialValue: selectedCompany,
+                  dropDownValueList: companyValueList,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCompany = newValue!;
+                      dbName = dbNameValueList[companyValueList.indexOf(newValue)];
+                      companyId = companyIdList[companyValueList.indexOf(newValue)];
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text("Financial Year", style: AppTextStyles.lable),
+              const SizedBox(height: 8),
+              Container(
+                                padding: EdgeInsets.only(bottom: 10),
+
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey)),
+                child: dropDownWidget(
+                  initialValue: selectedFinancialYear,
+                  dropDownValueList: financialYearValueList,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFinancialYear = newValue!;
+                      financialYearValue = newValue;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+  child: Text("Submit", style: TextStyle(color: AppTheme.primaryColor)),
+  onPressed: ()  {
+    // Get instance of SharedPreferences first
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final service = ApiLoginPasswordService();
+    service.selectCompanyFinYear(companyId, dbName, selectedFinancialYear)
+        .then((valueMain) async {
+      if (valueMain.isNotEmpty) {
+        if (valueMain["code"] == 0) {
+          // Save token
+          prefs.setString("token", valueMain["token"].toString());
+          prefs.setString("companyName", selectedCompany);
+          prefs.setString("financialYear", selectedFinancialYear);
+          prefs.setString("companyId", companyId.toString());
+
+          // Save remember me info
+          if (isRemember) {
+            prefs.setString('username', emailController.text);
+            prefs.setString('password', password.text);
+            prefs.setBool('isRemember', isRemember);
+          }
+
+          String? savedMPin = prefs.getString('mpin');
+
+          // Close dialog first
+          Navigator.pop(context);
+
+          // Navigate based on MPin
+          if (savedMPin != null && savedMPin.isNotEmpty) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MPinScreen()),
+            );
           } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CreateMPinScreen()),
+            );
+          }
+        } else {
+          Fluttertoast.showToast(
+            msg: "Invalid Credentials",
+            backgroundColor: Colors.red,
+            gravity: ToastGravity.TOP,
+            textColor: Colors.white,
+          );
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Invalid Credentials",
+          backgroundColor: Colors.red,
+          gravity: ToastGravity.TOP,
+          textColor: Colors.white,
+        );
+      }
+    });
+  },
+)
+
+        ],
+      );
+    });
+  },
+);
+
+          } else {
+                    Navigator.pop(context);
+
             Fluttertoast.showToast(
                 msg: "Invalid Credentials",
                 backgroundColor: Colors.red,
@@ -178,6 +317,8 @@ setState(() {
                 textColor: Colors.white);
           }
         } else {
+                  Navigator.pop(context);
+
           Fluttertoast.showToast(
               msg: "Invalid Credentials",
               backgroundColor: Colors.red,
@@ -204,18 +345,24 @@ setState(() {
       
       companyValueList.clear();
       dbNameValueList.clear();
+      companyIdList.clear();
       companyValueList.add("Choose Company");
       dbNameValueList.add("Choose Company");
-
+        companyIdList.add(0);
 for (var companyModel in companyValueModel!.data!.data) {
   companyValueList.add(companyModel.companyName);
   dbNameValueList.add(companyModel.dbName);
+  companyIdList.add(companyModel.companyId);
 }
 companyValue = companyValueModel.data.data[0].companyName;
+companyId = companyValueModel.data.data[0].companyId;
 dbName= companyValueModel.data.data[0].dbName;
-setState(() {
-});
+ _getFinanceYear();
+
+
           } else {
+                    Navigator.pop(context);
+
             Fluttertoast.showToast(
                 msg: "Invalid Credentials",
                 backgroundColor: Colors.red,
@@ -223,6 +370,8 @@ setState(() {
                 textColor: Colors.white);
           }
         } else {
+                  Navigator.pop(context);
+
           Fluttertoast.showToast(
               msg: "Invalid Credentials",
               backgroundColor: Colors.red,
@@ -270,63 +419,63 @@ setState(() {
               SizedBox(
                 height: 20,
               ),
-           Text(
-            "Company Name",
-            style: AppTextStyles.lable,
-          ),
-            SizedBox(
-            height: 8,
-          ),
-          Container(
-            padding: EdgeInsets.only(bottom: 10),
+  //          Text(
+  //           "Company Name",
+  //           style: AppTextStyles.lable,
+  //         ),
+  //           SizedBox(
+  //           height: 8,
+  //         ),
+  //         Container(
+  //           padding: EdgeInsets.only(bottom: 10),
     
-    decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+  //   decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
                 
 
-    border: Border.all(color: Colors.grey)
-  ),                
-            child: dropDownWidget(
-                    initialValue: companyValue,
-                    dropDownValueList: companyValueList,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        companyValue = newValue!;
-                        dbName= dbNameValueList[companyValueList.indexOf(newValue)];
+  //   border: Border.all(color: Colors.grey)
+  // ),                
+  //           child: dropDownWidget(
+  //                   initialValue: companyValue,
+  //                   dropDownValueList: companyValueList,
+  //                   onChanged: (String? newValue) {
+  //                     setState(() {
+  //                       companyValue = newValue!;
+  //                       dbName= dbNameValueList[companyValueList.indexOf(newValue)];
 
-                      });
-                    },
-                  ),
-          ),
-            SizedBox(
-            height: 8,
-          ),
-                Text(
-            "Financial Year",
-            style: AppTextStyles.lable,
-          ),
-            SizedBox(
-            height: 8,
-          ),
-          Container(
-            padding: EdgeInsets.only(bottom: 10),
+  //                     });
+  //                   },
+  //                 ),
+  //         ),
+          //   SizedBox(
+          //   height: 8,
+          // ),
+  //               Text(
+  //           "Financial Year",
+  //           style: AppTextStyles.lable,
+  //         ),
+  //           SizedBox(
+  //           height: 8,
+  //         ),
+  //         Container(
+  //           padding: EdgeInsets.only(bottom: 10),
     
-    decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+  //   decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
                 
 
-    border: Border.all(color: Colors.grey)
-  ),                
-            child: dropDownWidget(
-                    initialValue: financialYearValue,
-                    dropDownValueList: financialYearValueList,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        financialYearValue = newValue!;
-                      });
-                    },
-                  ),
-          ),
+  //   border: Border.all(color: Colors.grey)
+  // ),                
+  //           child: dropDownWidget(
+  //                   initialValue: financialYearValue,
+  //                   dropDownValueList: financialYearValueList,
+  //                   onChanged: (String? newValue) {
+  //                     setState(() {
+  //                       financialYearValue = newValue!;
+  //                     });
+  //                   },
+  //                 ),
+  //         ),
     SizedBox(
             height: 8,
           ),

@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:urovo/services/login_service.dart';
 import 'package:urovo/services/shared_preferences_class.dart';
+import 'package:urovo/view/auth/createMpinScreen.dart' show CreateMPinScreen;
 import 'package:urovo/view/auth/login.dart';
+import 'package:urovo/view/auth/mpinScreen.dart';
 import 'package:urovo/view/home/bottombar.dart';
 import 'package:urovo/view/home/home.dart';
 import 'package:urovo/view/home/profile.dart';
@@ -95,11 +98,23 @@ randomQuote = value[0]["q"];
        {
                 await Future.delayed(Duration(seconds: 2));
 
+SharedPreferences prefs = await SharedPreferences.getInstance();
+String? savedMPin = prefs.getString('mpin');
+
+if (savedMPin != null && savedMPin.isNotEmpty) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => MPinScreen()));
+} else {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => CreateMPinScreen()));
+}
          print(token);
-           Navigator.pushAndRemoveUntil(
-                  context, MaterialPageRoute(builder: (_) {
-                return  MainScreen();
-              }), (route) => false);
+          //  Navigator.pushAndRemoveUntil(
+          //         context, MaterialPageRoute(builder: (_) {
+          //       return  MainScreen();
+          //     }), (route) => false);
 
        }
        }
@@ -114,7 +129,7 @@ randomQuote = value[0]["q"];
     return  Scaffold(
       body:  Container(
           color: Colors.black,
-          child: Center(child: Image.asset('assets/images/Applogo.jpeg', width: 158,
+          child: Center(child: Image.asset('assets/images/Logo1.ico', width: 158,
   fit: BoxFit.cover)),
         ),
     );

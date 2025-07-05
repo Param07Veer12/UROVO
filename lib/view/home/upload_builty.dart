@@ -9,11 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:urovo/models/BuiltyModel.dart';
 import 'package:urovo/services/bill_service.dart';
 import 'package:urovo/services/builty_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 import '../../components/textfield.dart';
 import '../../constant/app_theme.dart';
@@ -25,6 +27,9 @@ class UploadBuilty extends StatefulWidget {
 }
 
 class _nameState extends State<UploadBuilty> {
+    String? _scannedSerialNumber;
+  final MobileScannerController _scannerController = MobileScannerController();
+
   final statusid = TextEditingController();
   List getStatus = [];
    File? imageFile;
@@ -47,6 +52,7 @@ class _nameState extends State<UploadBuilty> {
     _scrollController = ScrollController();
     _getBuiltyAPI();
   }
+
   bool isLoading = false;
 
   DateTimeRange? _selectedDateRange;
@@ -66,6 +72,12 @@ class _nameState extends State<UploadBuilty> {
     }
 
   }
+    @override
+  void dispose() {
+    _scannerController.dispose();
+    super.dispose();
+  }
+  
     Widget textField(
       {required TextEditingController controller,
       required bool isReadonly,
@@ -378,11 +390,73 @@ class _nameState extends State<UploadBuilty> {
                                   DataCell(
                                     Center(
                                       
-                                      child: textField(
-                          controller: _builtyNumberController[index],
-                          isReadonly: false,
-                          color: Color.fromRGBO(43, 43, 43, 1),
-                          inputFormatters: []),
+                                      child:    TextFormField(
+            cursorColor: Colors.black,
+            textInputAction: TextInputAction.done,
+               decoration: InputDecoration(
+                    // labelText: 'Product Barcode',
+    isDense: true,
+                hintText: '',
+                
+                fillColor: const Color.fromARGB(255, 228, 227, 227),
+                filled: true,
+                contentPadding: const EdgeInsets.fromLTRB(
+                  13,
+                  8,
+                  8,
+                  8,
+                ),
+                focusedBorder: buildOutlineInputBorder(),
+                disabledBorder: buildOutlineInputBorder(),
+                enabledBorder: buildOutlineInputBorder(),
+                errorBorder: buildOutlineInputBorder(),
+                focusedErrorBorder: buildOutlineInputBorder(),
+                border: buildOutlineInputBorder(),
+                      suffixIcon:
+                 IconButton(
+                    icon: Icon(Icons.qr_code_scanner),
+                    color: Colors.black,
+                    tooltip: 'Scan Bar Code',
+                    onPressed: () async {
+
+String? res = await SimpleBarcodeScanner.scanBarcode(
+                  context,
+                  barcodeAppBar: const BarcodeAppBar(
+                    appBarTitle: 'Scan',
+                    centerTitle: false,
+                    enableBackButton: true,
+                    backButtonIcon: Icon(Icons.arrow_back_ios),
+                  ),
+                  isShowFlashIcon: true,
+                  delayMillis: 2000,
+                  cameraFace: CameraFace.back,
+                );
+                setState(() {
+                  if (res != "-1")
+                  {
+                   _builtyNumberController[index].text = res as String;
+                  }
+                 
+
+                });
+              },
+                  )
+                  ),
+            // keyboardType: const TextInputType.numberWithOptions(signed: true),
+            readOnly: false,
+            controller: _builtyNumberController[index],
+              style: TextStyle(color: Colors.black),
+
+          
+            // onChanged: onChanged,
+            // onTap: onTap,
+          ),
+                                      
+                          //              textField(
+                          // controller: _builtyNumberController[index],
+                          // isReadonly: false,
+                          // color: Color.fromRGBO(43, 43, 43, 1),
+                          // inputFormatters: []),
                                     ),
                                   ),
                                   DataCell(

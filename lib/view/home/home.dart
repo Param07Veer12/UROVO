@@ -4,10 +4,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:urovo/components/dropdown.dart';
+import 'package:urovo/models/CompanyModel.dart';
+import 'package:urovo/models/FinancialYearModel.dart';
 import 'package:urovo/models/pie_chart_model.dart';
 import 'package:urovo/services/builty_service.dart';
 import 'package:urovo/services/dashboard_service.dart';
+import 'package:urovo/services/login_service.dart';
+import 'package:urovo/services/shared_preferences_class.dart';
 import 'package:urovo/view/home/bottombar.dart';
 import 'package:urovo/view/home/product_scan.dart';
 import '../../constant/app_theme.dart';
@@ -50,7 +56,7 @@ late List<ChartData> chartData ;
         if (value != null) {
 
       pieModel = value;
-chartData = convertToChartData(pieModel!.piChat);
+chartData = convertToChartData(pieModel?.piChat ?? []);
 legendHeight = chartData.length * singleLegendItemHeight;
 heightView = (125 * chartData.length).toDouble() + 250;
 
@@ -99,6 +105,329 @@ List<ChartData> convertToChartData(List<PiChartData> piChartDataList) {
     1.0,                 // Fully opaque (alpha value)
   );
 }
+Widget _buildDrawer(BuildContext context) {
+  return Drawer(
+    backgroundColor: Colors.black, // Set dark background
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+       DrawerHeader(
+  decoration: BoxDecoration(
+    color: Colors.black,
+  ),
+  child: FutureBuilder(
+    future: SharedPreferences.getInstance(),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) {
+        return CircularProgressIndicator();
+      }
+      final prefs = snapshot.data as SharedPreferences;
+      final companyName = prefs.getString('companyName') ?? 'No Company';
+      final financialYear = prefs.getString('financialYear') ?? 'No Year';
+
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Container(
+            //   height: 50,
+            //   width: 50,
+            //   decoration: const BoxDecoration(
+            //     shape: BoxShape.circle,
+            //     image: DecorationImage(
+            //       image: AssetImage('assets/images/Logo1.ico'),
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
+            // ),
+            SizedBox(height: 8),
+            // Text('Welcome!', style: TextStyle(color: Colors.white, fontSize: 18)),
+            // Text('To Creativeline', style: TextStyle(color: Colors.grey)),
+            SizedBox(height: 12),
+            Text('$companyName', style: TextStyle(color: Colors.white)),
+                        SizedBox(height: 8),
+
+            Text('Financial Year: $financialYear', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+      );
+    },
+  ),
+),
+
+        ListTile(
+          leading: Icon(Icons.sync_alt, color: Colors.white),
+          title: Text('Change Company / Year', style: TextStyle(color: Colors.white)),
+          onTap: () {
+            Navigator.pop(context);
+              showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(50)),
+                width: 50,
+                height: 50,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: CupertinoActivityIndicator(
+                      color: AppTheme.primaryColor, radius: 14),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+            _getCompanyMst();
+            // TODO: Show your company/year selection popup
+          },
+        ),
+     
+      ],
+    ),
+  );
+}
+      String companyValue = "Choose Company";
+            int companyId = 0;
+
+    List<String> companyValueList = ["Choose Company"];
+        List<int> companyIdList = [0];
+
+     List<String> dbNameValueList = ["Choose Company"];
+
+      String financialYearValue = "Choose Finacial Year";
+    List<String> financialYearValueList = ["Choose Finacial Year"];
+    var dbName = "";
+
+
+     void _getCompanyMst() {
+           SharedPreferencesClass.initializeSharedPref();
+
+      final service = ApiLoginPasswordService();
+      service.getCompanyAPI()
+          .then((value) {
+       
+        if (value.isNotEmpty) {
+                var companyValueModel = CompanyModel.fromJson((value));
+
+          if (companyValueModel.data.errorCode == 0) {
+
+      
+      companyValueList.clear();
+      dbNameValueList.clear();
+      companyIdList.clear();
+      companyValueList.add("Choose Company");
+      dbNameValueList.add("Choose Company");
+        companyIdList.add(0);
+for (var companyModel in companyValueModel!.data!.data) {
+  companyValueList.add(companyModel.companyName);
+  dbNameValueList.add(companyModel.dbName);
+  companyIdList.add(companyModel.companyId);
+}
+companyValue = companyValueModel.data.data[0].companyName;
+companyId = companyValueModel.data.data[0].companyId;
+dbName= companyValueModel.data.data[0].dbName;
+ _getFinanceYear();
+
+
+          } else {
+                    Navigator.pop(context);
+
+            Fluttertoast.showToast(
+                msg: "Invalid Credentials",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white);
+          }
+        } else {
+                  Navigator.pop(context);
+
+          Fluttertoast.showToast(
+              msg: "Invalid Credentials",
+              backgroundColor: Colors.red,
+              gravity: ToastGravity.TOP,
+              textColor: Colors.white);
+        }
+      });
+     
+   
+  }
+
+     Future<void> _getFinanceYear() async {
+               SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      final service = ApiLoginPasswordService();
+      service.getFinancialYearAPI()
+          .then((value) {
+        if (value.isNotEmpty) {
+                var financialModel = FinacialYearModel.fromJson((value));
+
+          if (financialModel.data!.errorCode == 0) {
+            financialYearValueList.clear();
+          financialYearValueList.add("Choose Finacial Year");
+for (var financialModel in financialModel!.data!.data) {
+  financialYearValueList.add(financialModel.fnYearCode);
+   if (financialModel.isCurrentYear == "Y")
+   {
+     financialYearValue = financialModel.fnYearCode;
+     
+   }
+
+}
+setState(() {
+});
+
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) {
+    String selectedCompany = companyValue;
+    String selectedFinancialYear = financialYearValue;
+
+    return StatefulBuilder(builder: (context, setState) {
+      return AlertDialog(
+        backgroundColor: Colors.black,
+        title: Text("Select Company & Financial Year", style: AppTextStyles.lable),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Company Name", style: AppTextStyles.lable),
+              const SizedBox(height: 8),
+              Container(
+                padding: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey)),
+                child: dropDownWidget(
+                  initialValue: selectedCompany,
+                  dropDownValueList: companyValueList,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCompany = newValue!;
+                      dbName = dbNameValueList[companyValueList.indexOf(newValue)];
+                      companyId = companyIdList[companyValueList.indexOf(newValue)];
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text("Financial Year", style: AppTextStyles.lable),
+              const SizedBox(height: 8),
+              Container(
+                                padding: EdgeInsets.only(bottom: 10),
+
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey)),
+                child: dropDownWidget(
+                  initialValue: selectedFinancialYear,
+                  dropDownValueList: financialYearValueList,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedFinancialYear = newValue!;
+                      financialYearValue = newValue;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+             TextButton(
+            child: Text("Cancel", style: TextStyle(color: AppTheme.primaryColor)),
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+
+              Navigator.pop(context); // Close dialog
+
+           
+            },
+          ),
+       TextButton(
+  child: Text("Submit", style: TextStyle(color: AppTheme.primaryColor)),
+  onPressed: () async {
+
+    final service = ApiLoginPasswordService();
+    service.selectCompanyFinYear(companyId, dbName, selectedFinancialYear)
+        .then((value) async {
+      if (value.isNotEmpty) {
+        if (value["code"] == 0) {
+          // Save token
+          prefs.setString("token", value["token"].toString());
+          prefs.setString("companyName", selectedCompany);
+          prefs.setString("financialYear", selectedFinancialYear);
+          prefs.setString("companyId", companyId.toString());
+
+          // Close the dialog first
+          Navigator.pop(context);
+          Navigator.pop(context);
+          // Refresh the dashboard
+          _getArticleAPI(selectedOptionIndex.toString());
+        } else {
+          Fluttertoast.showToast(
+            msg: "Invalid Credentials",
+            backgroundColor: Colors.red,
+            gravity: ToastGravity.TOP,
+            textColor: Colors.white,
+          );
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Invalid Credentials",
+          backgroundColor: Colors.red,
+          gravity: ToastGravity.TOP,
+          textColor: Colors.white,
+        );
+      }
+    }).catchError((error) {
+      // Optional: Handle exceptions like network failure
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        backgroundColor: Colors.red,
+        gravity: ToastGravity.TOP,
+        textColor: Colors.white,
+      );
+    });
+  },
+)
+
+        ],
+      );
+    });
+  },
+);
+
+          } else {
+                    Navigator.pop(context);
+
+            Fluttertoast.showToast(
+                msg: "Invalid Credentials",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white);
+          }
+        } else {
+                  Navigator.pop(context);
+
+          Fluttertoast.showToast(
+              msg: "Invalid Credentials",
+              backgroundColor: Colors.red,
+              gravity: ToastGravity.TOP,
+              textColor: Colors.white);
+        }
+      });
+     
+   
+  }
+
 String selectedOption = "Today";
 int selectedOptionIndex = 1;
 
@@ -106,14 +435,15 @@ double heightView = 1500.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: _buildDrawer(context),
         appBar: AppBar(
           elevation: 0,
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           centerTitle: false,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             "Dashboard",
-            style: AppTextStyles.headline1,
+            // style: AppTextStyles.headline1,
           ),
               actions: [
           DropdownButtonHideUnderline(
@@ -228,7 +558,7 @@ double heightView = 1500.0;
                 // Set dynamic height
                   overflowMode: LegendItemOverflowMode.wrap, 
                     legendItemBuilder: (String name, dynamic series, dynamic point, int index) {
-              var piChat = pieModel!.piChat[index];
+              var piChat = pieModel!.piChat?[index];
                             final ChartData data = chartData[index];
 
               return Padding(
@@ -242,13 +572,13 @@ double heightView = 1500.0;
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            piChat.partyName,
+                            piChat?.partyName ?? "",
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text("Sales Count: ${piChat.salesCount}"),
-                          Text("Sum of Amount: ${piChat.sumOfAmount}"),
-                          Text("Sum of Qty: ${piChat.sumOfQty}"),
-                          Text("Sales Percent: ${piChat.salesPercent.toStringAsFixed(2)}%"),
+                          Text("Sales Count: ${piChat?.salesCount}"),
+                          Text("Sum of Amount: ${piChat?.sumOfAmount}"),
+                          Text("Sum of Qty: ${piChat?.sumOfQty}"),
+                          Text("Sales Percent: ${piChat?.salesPercent.toStringAsFixed(2)}%"),
                         ],
                       ),
                     ),
@@ -295,21 +625,22 @@ double heightView = 1500.0;
                     mainAxisSpacing: 22,
                     crossAxisSpacing: 22),
                 children: [
-   buildCard(
-      "Sales Count",
-      pieModel!.totalSales!.salesCount.toString(),
-      CupertinoIcons.chart_bar_fill,
-    ),
-    buildCard(
-      "Sum of Amount",
-      pieModel!.totalSales!.sumOfAmount.toString(),
-      CupertinoIcons.money_dollar_circle,
-    ),
-    buildCard(
-      "Sum of Quantity",
-      pieModel!.totalSales!.sumOfQty.toString(),
-      CupertinoIcons.cube_box_fill,
-    ),
+ buildCard(
+  "Sales Count",
+  pieModel?.totalSales?.salesCount.toString() ?? '0',
+  CupertinoIcons.chart_bar_fill,
+),
+buildCard(
+  "Sum of Amount",
+  pieModel?.totalSales?.sumOfAmount ?? '0',
+  CupertinoIcons.money_dollar_circle,
+),
+buildCard(
+  "Sum of Quantity",
+  pieModel?.totalSales?.sumOfQty ?? '0',
+  CupertinoIcons.cube_box_fill,
+),
+
     buildCard(
       "Receipt",
       pieModel!.receipt.toString(),

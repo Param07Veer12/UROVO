@@ -1,6 +1,6 @@
 class PiChartResponse {
-  final List<PiChartData> piChat;
-  final TotalSales totalSales;
+  final List<PiChartData>? piChat;
+  final TotalSales? totalSales;
   final double receipt;
   final int errorCode;
   final String errorDesc;
@@ -13,19 +13,21 @@ class PiChartResponse {
     required this.errorDesc,
   });
 
-  // Factory constructor for parsing JSON
   factory PiChartResponse.fromJson(Map<String, dynamic> json) {
     return PiChartResponse(
-      piChat: (json['piChat'] as List)
-          .map((data) => PiChartData.fromJson(data))
+      piChat: (json['piChat'] as List?)
+          ?.map((data) => PiChartData.fromJson(data))
           .toList(),
-      totalSales: TotalSales.fromJson(json['totalSales']),
-      receipt: json['receipt'],
-      errorCode: json['errorCode'],
-      errorDesc: json['errorDesc'],
+      totalSales: json['totalSales'] != null
+          ? TotalSales.fromJson(json['totalSales'])
+          : null,
+      receipt: (json['receipt'] ?? 0).toDouble(),
+      errorCode: json['errorCode'] ?? 0,
+      errorDesc: json['errorDesc'] ?? '',
     );
   }
 }
+
 
 class PiChartData {
   final int salesCount;

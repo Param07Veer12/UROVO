@@ -35,6 +35,27 @@ class ApiLoginPasswordService {
     }
   }
 
+  Future<dynamic> selectCompanyFinYear(int? companyId,String? dbName,String? fnYearCode) async {
+    var ur = Uri.parse(AppConstants.selectCompanyFinYear);
+      var token = PreferenceUtils.getString("firsttoken");
+    final response2 =
+        await http.post(ur, body: jsonEncode({"companyId": companyId,"dbName": dbName,"fnYearCode": fnYearCode}), headers: {
+      "content-type": "application/json",
+      'Authorization': 'Bearer $token',
+    });
+    if (kDebugMode) {
+      print(response2.body);
+    }
+
+    switch (response2.statusCode) {
+      case 200:
+        var data2 = jsonDecode(response2.body);
+        return data2;
+
+      default:
+        return response2;
+    }
+  }
   Future<dynamic> apiQrLogin(String? code) async {
     var ur = Uri.parse(AppConstants.webLogin);
       var token = PreferenceUtils.getString("token");
@@ -59,7 +80,7 @@ class ApiLoginPasswordService {
    Future<dynamic> getFinancialYearAPI() async {
     
     var ur = Uri.parse(AppConstants.getFinancialYear);
-      var token = PreferenceUtils.getString("token");
+      var token = PreferenceUtils.getString("firsttoken");
     final response2 =
         await http.get(ur, headers: {
       "content-type": "application/json",
@@ -85,7 +106,7 @@ class ApiLoginPasswordService {
      Future<dynamic> getCompanyAPI() async {
     
     var ur = Uri.parse(AppConstants.getCompanyMst);
-      var token = PreferenceUtils.getString("token");
+      var token = PreferenceUtils.getString("firsttoken");
     final response2 =
         await http.get(ur, headers: {
       "content-type": "application/json",

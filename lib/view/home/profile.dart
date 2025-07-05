@@ -46,7 +46,7 @@ class _ProfileState extends State<Profile> {
               decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   image: const DecorationImage(
-                    image: AssetImage('assets/images/Applogo.jpeg'),
+                    image: AssetImage('assets/images/Logo1.ico'),
                     fit: BoxFit.cover,
                   )),
             ),
@@ -123,48 +123,54 @@ class _ProfileState extends State<Profile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Account Settings",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .copyWith(fontSize: 16),
-                      ),
-                      Icon(
-                        Icons.settings,
-                        size: 16,
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  InkWell(
-                    onTap: () {},
+                  Container(
+                    height: 40,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Privacy Policy",
+                          "Account Settings",
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall!
                               .copyWith(fontSize: 16),
                         ),
                         Icon(
-                          Icons.privacy_tip_rounded,
-                          size: 20,
+                          Icons.settings,
+                          size: 16,
                         )
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 16,
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Privacy Policy",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall!
+                                .copyWith(fontSize: 16),
+                          ),
+                          Icon(
+                            Icons.privacy_tip_rounded,
+                            size: 20,
+                          )
+                        ],
+                      ),
+                    ),
                   ),
+                  // SizedBox(
+                  //   height: 16,
+                  // ),
                   // SizedBox(
                   //   height: 16.h,
                   // ),
@@ -289,201 +295,232 @@ class _ProfileState extends State<Profile> {
                   // SizedBox(
                   //   height: 20.h,
                   // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "My Orders",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .copyWith(fontSize: 16),
-                      ),
-                      Icon(
-                        CupertinoIcons.square_list,
-                        size: 20,
-                      )
-                    ],
+                  Container(
+                    height: 40,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "My Orders",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .copyWith(fontSize: 16),
+                        ),
+                        Icon(
+                          CupertinoIcons.square_list,
+                          size: 20,
+                        )
+                      ],
+                    ),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  GestureDetector(
+                  // SizedBox(
+                  //   height: 16,
+                  // ),
+                  InkWell(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) => BillsPage()));
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Bills",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(fontSize: 16),
-                        ),
-                        Icon(
-                          CupertinoIcons.doc,
-                          size: 20,
-                        )
-                      ],
+                    child: Container(
+                      height: 40,
+                      child: Row(
+                      
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Bills",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall!
+                                .copyWith(fontSize: 16),
+                          ),
+                          Icon(
+                            CupertinoIcons.doc,
+                            size: 20,
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  GestureDetector(
+                  // SizedBox(
+                  //   height: 16,
+                  // ),
+                  InkWell(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) => Legder()));
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Ledger",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(fontSize: 16),
-                        ),
-                        Icon(
-                          CupertinoIcons.chart_bar,
-                          size: 20,
-                        )
-                      ],
+                    child: Container(
+                      
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Ledger",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall!
+                                .copyWith(fontSize: 16),
+                          ),
+                          Icon(
+                            CupertinoIcons.chart_bar,
+                            size: 20,
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                      GestureDetector(
+                  // SizedBox(
+                  //   height: 16,
+                  // ),
+                      InkWell(
                     onTap: () {
                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) => UploadBuilty()));
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Upload Builty",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(fontSize: 16),
-                        ),
-                        Icon(
-                  
-          Icons.business, 
-                          size: 20,
-                        )
-                      ],
+                    child: Container(
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Upload Builty",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall!
+                                .copyWith(fontSize: 16),
+                          ),
+                          Icon(
+                                        
+                                Icons.business, 
+                            size: 20,
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                    SizedBox(
-                    height: 16,
-                  ),
-                      GestureDetector(
+                  //   SizedBox(
+                  //   height: 16,
+                  // ),
+                      InkWell(
                     onTap: () {
                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) => ArticleScreen()));
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Article",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(fontSize: 16),
-                        ),
-                        Icon(
-                  
-          Icons.business, 
-                          size: 20,
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => CupertinoAlertDialog(
-                          title: const Text('Logout'),
-                          insetAnimationCurve: Curves.linear,
-                          insetAnimationDuration:
-                              const Duration(milliseconds: 500),
-                          content: const Padding(
-                            padding: EdgeInsets.only(top: 4.0),
-                            child: Text(
-                              "Are you sure you want to logout",
-                            ),
+                    child: Container(
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Article",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall!
+                                .copyWith(fontSize: 16),
                           ),
-                          actions: <CupertinoDialogAction>[
-                            CupertinoDialogAction(
-                              /// This parameter indicates this action is the default,
-                              /// and turns the action's text to bold text.
-                              isDefaultAction: true,
-                              onPressed: () {
-                                Navigator.pop(context);
-                            
-                              },
-                              child: const Text('Cancel'),
-                            ),
-                            CupertinoDialogAction(
-                              /// This parameter indicates the action would perform
-                              /// a destructive action such as deletion, and turns
-                              /// the action's text color to red.
-                              isDestructiveAction: true,
-                              onPressed: () {
-                                     SharedPreferencesClass.initializeSharedPref();
-
-                SharedPreferencesClass.prefs.clear();
- Navigator.pushAndRemoveUntil(
-                  context, MaterialPageRoute(builder: (_) {
-                return  SplashScreen();
-              }), (route) => false);
-                               
-                              },
-                              child: const Text('Logout'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Logout",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(fontSize: 16),
-                        ),
-                        Icon(
-                          Icons.logout,
-                          size: 20,
-                        )
-                      ],
+                          Icon(
+                                        
+                                Icons.business, 
+                            size: 20,
+                          )
+                        ],
+                      ),
                     ),
                   ),
+                  // SizedBox(
+                  //   height: 16,
+                  // ),
+  //                 InkWell(
+  //                   onTap: () {
+  //                     showDialog(
+  //                       context: context,
+  //                       builder: (context) => CupertinoAlertDialog(
+  //                         title: const Text('Logout'),
+  //                         insetAnimationCurve: Curves.linear,
+  //                         insetAnimationDuration:
+  //                             const Duration(milliseconds: 500),
+  //                         content: const Padding(
+  //                           padding: EdgeInsets.only(top: 4.0),
+  //                           child: Text(
+  //                             "Are you sure you want to logout",
+  //                           ),
+  //                         ),
+  //                         actions: <CupertinoDialogAction>[
+  //                           CupertinoDialogAction(
+  //                             /// This parameter indicates this action is the default,
+  //                             /// and turns the action's text to bold text.
+  //                             isDefaultAction: true,
+  //                             onPressed: () {
+  //                               Navigator.pop(context);
+                            
+  //                             },
+  //                             child: const Text('Cancel'),
+  //                           ),
+  //                           CupertinoDialogAction(
+  //                             /// This parameter indicates the action would perform
+  //                             /// a destructive action such as deletion, and turns
+  //                             /// the action's text color to red.
+  //                             isDestructiveAction: true,
+  //                             onPressed: () async {
+  //                    SharedPreferencesClass.initializeSharedPref();
+  // final prefs = SharedPreferencesClass.prefs;
+
+  // // Store mpin temporarily
+  // final savedMPin = prefs.getString('mpin');
+
+  // await prefs.clear();
+
+  // if (savedMPin != null) {
+  //   await prefs.setString('mpin', savedMPin);
+  // }
+
+  // Navigator.pushAndRemoveUntil(
+  //   context,
+  //   MaterialPageRoute(builder: (_) => SplashScreen()),
+  //   (route) => false,
+  // );
+                               
+  //                             },
+  //                             child: Container(
+  //                               child: const Text('Logout')),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     );
+  //                   },
+  //                   child: Container(
+  //                     height: 40,
+  //                     child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         Text(
+  //                           "Logout",
+  //                           style: Theme.of(context)
+  //                               .textTheme
+  //                               .headlineSmall!
+  //                               .copyWith(fontSize: 16),
+  //                         ),
+  //                         Icon(
+  //                           Icons.logout,
+  //                           size: 20,
+  //                         )
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
                   SizedBox(
-                    height: 26,
+                    height: 40,
                   ),
                   InkWell(
                     borderRadius: BorderRadius.circular(22),
