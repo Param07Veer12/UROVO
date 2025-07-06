@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:urovo/models/BillsModel.dart';
+import 'package:urovo/models/PartyModel.dart';
 import 'package:urovo/services/bill_service.dart';
 import 'package:urovo/view/home/product_scan.dart';
 import 'package:urovo/view/home/products.dart';
@@ -16,9 +17,19 @@ import '../../controllers/bottombar_controller.dart';
 import '../../services/pref_service.dart';
 import 'bill_details.dart';
 import 'vendor_details.dart';
+import 'package:intl/intl.dart';
 
 class BillsPage extends StatefulWidget {
-  BillsPage({super.key});
+  final LstPartyNames selectedParty;
+  final DateTime fromDate;
+  final DateTime toDate;
+
+  BillsPage({
+    Key? key,
+    required this.selectedParty,
+    required this.fromDate,
+    required this.toDate,
+  }) : super(key: key);
 
   @override
   State<BillsPage> createState() => _BillsPageState();
@@ -28,18 +39,46 @@ class _BillsPageState extends State<BillsPage> {
   @override
   void initState() {
     super.initState();
+       var token = PreferenceUtils.getString("firsttoken");
+       print(token);
+      //  getPartyNameByGST();
      getBills();
   }
 
   List<BillsModel>? billList;
+   GetPartyNameModel? partyModel;
+
   List<BillsModel>? selectedList = [];
-  void getBills() async {
+  String formatDate(DateTime date) {
+  return DateFormat("dd-MMM-yyyy").format(date);
+}
+void getBills() async {
+  final service = ApiBillService();
+  final from = formatDate(widget.fromDate); // e.g. 01-Jan-2025
+  final to = formatDate(widget.toDate);
+  final partyCode = widget.selectedParty.code ?? "";
+
+  final bills = await service.apiGetBillls(from, to, partyCode);
+  if (bills.isNotEmpty) {
+    setState(() {
+      billList = bills;
+    });
+  }
+}
+
+  
+
+    void getPartyNameByGST() async {
     final service = ApiBillService();
-    service.apiGetBillls().then((value) {
-      if (value.isNotEmpty) {
+    service.apiGetPartyNameByGST().then((value) {
+      if (value != null) {
         setState(() {
-          billList = value;
+          partyModel = value;
         });
+      }
+      else
+      {
+
       }
     });
   }
@@ -59,7 +98,7 @@ class _BillsPageState extends State<BillsPage> {
                 children: [
                   // if (controller.selectedParty == '')
                     Text(
-                      "Select Buyer ",
+                      "Bills",
                       style: AppTextStyles.headline1.copyWith(fontSize: 14),
                     )
                   // else

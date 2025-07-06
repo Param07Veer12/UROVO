@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:urovo/models/PartyModel.dart';
 import 'package:urovo/view/home/upload_builty.dart';
 import 'dart:convert';
 
@@ -11,11 +12,37 @@ import '../models/BillsModel.dart';
 import 'pref_service.dart';
 
 class ApiBillService {
-  Future<List<BillsModel>> apiGetBillls() async {
-    List<BillsModel> response = [];
+Future<List<BillsModel>> apiGetBillls(String fromDate, String toDate, String partyCode) async {
+  List<BillsModel> response = [];
+  var token = PreferenceUtils.getString("token");
+
+  final url = Uri.parse(
+    "${AppConstants.getBills}?FromDate=$fromDate&ToDate=$toDate&PartyCode=$partyCode",
+  );
+
+  final response2 = await http.get(url, headers: {
+    "content-type": "application/json",
+    'Authorization': 'Bearer $token',
+  });
+
+  if (kDebugMode) {
+    print(response2.body);
+  }
+
+  if (response2.statusCode == 200) {
+    var data2 = jsonDecode(response2.body);
+    data2.forEach((v) {
+      response.add(BillsModel.fromJson(v));
+    });
+  }
+
+  return response;
+}
+
+
+    Future<GetPartyNameModel?> apiGetPartyNameByGST() async {
     var token = PreferenceUtils.getString("token");
-    var ur = Uri.parse(AppConstants.getBills +
-        "?FromDate=01-jan-2000&ToDate=01-jan-2025&PartyCode=07AADFB7899P1ZI");
+    var ur = Uri.parse(AppConstants.getPartyNameByGST);
     final response2 = await http.get(ur, headers: {
       "content-type": "application/json",
       'Authorization': 'Bearer $token',
@@ -26,15 +53,13 @@ class ApiBillService {
 
     switch (response2.statusCode) {
       case 200:
-        var data2 = jsonDecode(response2.body);
-        data2.forEach((v) {
-          response.add(BillsModel.fromJson(v));
-        });
+        var data2 = GetPartyNameModel.fromJson(jsonDecode(response2.body));
+      
 
-        return response;
+        return data2;
 
       default:
-        return response;
+        return null;
         break;
     }
   }

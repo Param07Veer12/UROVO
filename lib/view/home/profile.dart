@@ -7,6 +7,7 @@ import 'package:urovo/view/home/bills.dart';
 
 import 'package:urovo/view/home/legder.dart';
 import 'package:urovo/view/home/qr_login.dart';
+import 'package:urovo/view/home/selectParty.dart';
 import 'package:urovo/view/home/upload_builty.dart';
 import '../../constant/app_theme.dart';
 
@@ -322,7 +323,7 @@ class _ProfileState extends State<Profile> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (BuildContext context) => BillsPage()));
+                              builder: (BuildContext context) => SelectPartyScreen()));
                     },
                     child: Container(
                       height: 40,
